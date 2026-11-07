@@ -1,0 +1,14 @@
+data/*
+!data/README.md
+
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+
+.env
+kaggle.json
+access_token
+
+.venv/
+venv/
+.DS_Store
