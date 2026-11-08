@@ -12,3 +12,4 @@ access_token
 .venv/
 venv/
 .DS_Store
+.pytest_cache/
