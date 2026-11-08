@@ -1,0 +1,11 @@
+{
+  "target": "isFraud",
+  "graph_ids": ["nameOrig", "nameDest"],
+  "time_column": "step",
+  "excluded": ["newbalanceOrig", "newbalanceDest", "isFlaggedFraud", "isFraud", "step", "oldbalanceDest"],
+  "scenarios": {
+    "A": ["type", "amount", "oldbalanceOrg"],
+    "B": ["type", "amount"]
+  },
+  "ablation_only": ["oldbalanceDest"]
+}

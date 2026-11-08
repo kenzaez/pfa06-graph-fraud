@@ -1,0 +1,10 @@
+{
+  "seed": 42,
+  "split_unit": "step",
+  "train": [1, 445],
+  "val": [446, 594],
+  "test": [595, 743],
+  "scoring_types": ["TRANSFER", "CASH_OUT"],
+  "history_types": ["CASH_IN", "CASH_OUT", "DEBIT", "PAYMENT", "TRANSFER"],
+  "day31_policy": "a valider avec l'encadrant"
+}
