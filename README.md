@@ -56,5 +56,8 @@ pytest tests/
 | Semaine | Contenu | Statut |
 |---------|---------|--------|
 | S1 | Cadrage, état de l'art, vérification initiale de PaySim | Terminé |
-| S2 | Audit complet, contrat de variables, partitions temporelles, fiche protocole, concordance | En cours de validation |
-| S3 | Référence E0 (XGBoost A et B, régression logistique), note générée automatiquement | Prêt à exécuter |
+| S2 | Audit complet, contrat de variables, partitions temporelles, fiche protocole, concordance (48/48 OK), prevalence par jour | Termine, fiche protocole en attente de validation du Pr. MESTARI |
+| S3 | Référence E0 (XGBoost A et B, régression logistique), note générée automatiquement | Terminé, résultats dans `reports/e0/` et `docs/note_s3_E0.md` |
+| S4 | Variables relationnelles causales sur G<t (E1) | À venir |
+| S5 | GraphSAGE avec classification des arêtes (E2) | À venir |
+| S6 | Comparaison E0, E1, E2, ablations, analyse des erreurs | À venir |
