@@ -7,5 +7,9 @@
     "A": ["type", "amount", "oldbalanceOrg"],
     "B": ["type", "amount"]
   },
+  "derivees": {
+    "ecart_montant_solde": {"formule": "oldbalanceOrg - amount", "depend_de": ["oldbalanceOrg", "amount"]},
+    "ratio_montant_solde": {"formule": "amount / (oldbalanceOrg + 1)", "depend_de": ["oldbalanceOrg", "amount"]}
+  },
   "ablation_only": ["oldbalanceDest"]
 }

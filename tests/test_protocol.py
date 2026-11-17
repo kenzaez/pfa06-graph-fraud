@@ -30,3 +30,25 @@ def test_cible_et_temps_jamais_en_entree():
     for feats in VARS["scenarios"].values():
         assert VARS["target"] not in feats
         assert VARS["time_column"] not in feats
+
+
+def test_jour31_tranche():
+    assert SPLITS["day31_policy"] in {"inclus", "exclu"}
+
+
+def test_population_principale_definie():
+    assert SPLITS["population_principale"] in SPLITS
+    assert SPLITS["population_secondaire"] in SPLITS
+    assert set(SPLITS["scoring_types"]) <= set(SPLITS["history_types"])
+
+
+def test_budget_alertes_fixe_a_priori():
+    b = SPLITS["alert_budget"]
+    assert b["unite"] in {"jour", "heure", "test"}
+    assert b["K"] == sorted(b["K"]) and all(k > 0 for k in b["K"])
+
+
+def test_sensibilite_ne_remplace_pas_le_decoupage():
+    for bornes in SPLITS["sensibilite_diagnostique"].values():
+        if isinstance(bornes, list):
+            assert bornes[0][0] == 1 and bornes[-1][1] == SPLITS["test"][1]

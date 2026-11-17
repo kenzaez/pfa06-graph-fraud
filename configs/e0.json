@@ -1,0 +1,16 @@
+{
+  "seed": 42,
+  "n_estimators_max": 500,
+  "early_stopping_rounds": 50,
+  "subsample": 0.8,
+  "max_depth": [4, 6, 8],
+  "learning_rate": [0.05, 0.1],
+  "desequilibre": [
+    {"nom": "naturel_spw", "taux_cible": null, "scale_pos_weight": "neg_sur_pos"},
+    {"nom": "sous_ech_1pct", "taux_cible": 0.01, "scale_pos_weight": 1},
+    {"nom": "sous_ech_5pct", "taux_cible": 0.05, "scale_pos_weight": 1},
+    {"nom": "sous_ech_10pct", "taux_cible": 0.10, "scale_pos_weight": 1}
+  ],
+  "budget_seuil_K": 250,
+  "population_secondaire": "memes hyperparametres que la principale"
+}

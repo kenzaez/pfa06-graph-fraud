@@ -22,6 +22,8 @@ Chaque transaction est évaluée uniquement à partir du graphe strictement ant�
 pfa06-graph-fraud/
 ├── configs/         partitions temporelles et contrat de variables
 ├── data/            données brutes (non versionnées, voir data/README.md)
+├── docs/            fiche protocole (R2), note sur la prévalence (R3), note S3
+├── models/          modèles E0 sauvegardés
 ├── notebooks/       notebooks d'analyse et d'expérimentation
 ├── reports/         figures et tableaux générés
 ├── src/             code réutilisable
@@ -34,12 +36,25 @@ pfa06-graph-fraud/
 1. Télécharger PaySim en suivant `data/README.md` et vérifier l'empreinte SHA256.
 2. Installer les dépendances : `pip install -r requirements.txt`
 3. Exécuter `notebooks/01_audit_paysim.ipynb` (testé sur Google Colab).
-4. Lancer les tests du protocole : `pytest tests/`
+4. Exécuter `notebooks/02_controle_s2.ipynb` : réexécution de l'audit, tableau de concordance rapport / code, prévalence par jour et par partition.
+5. Exécuter `notebooks/03_e0_xgboost.ipynb` : référence E0 et génération de `docs/note_s3_E0.md`.
+6. Lancer les tests du protocole : `pytest tests/`
+
+En ligne de commande :
+
+```
+python -m src.audit data/PS_20174392719_1491204439457_log.csv
+python -m src.concordance
+python -m src.prevalence data/PS_20174392719_1491204439457_log.csv
+python -c "from src.audit import load; from src import e0; e0.main(load('data/PS_20174392719_1491204439457_log.csv'))"
+python -m src.rapport_s3
+pytest tests/
+```
 
 ## Avancement
 
 | Semaine | Contenu | Statut |
 |---------|---------|--------|
 | S1 | Cadrage, état de l'art, vérification initiale de PaySim | Terminé |
-| S2 | Audit complet, contrat de variables, partitions temporelles | En cours de validation |
-| S3 | Référence E0 | À venir |
+| S2 | Audit complet, contrat de variables, partitions temporelles, fiche protocole, concordance | En cours de validation |
+| S3 | Référence E0 (XGBoost A et B, régression logistique), note générée automatiquement | Prêt à exécuter |

@@ -1,10 +1,20 @@
 {
   "seed": 42,
   "split_unit": "step",
+  "day_rule": "day = (step - 1) // 24 + 1",
   "train": [1, 445],
   "val": [446, 594],
   "test": [595, 743],
   "scoring_types": ["TRANSFER", "CASH_OUT"],
   "history_types": ["CASH_IN", "CASH_OUT", "DEBIT", "PAYMENT", "TRANSFER"],
-  "day31_policy": "a valider avec l'encadrant"
+  "population_principale": "scoring_types",
+  "population_secondaire": "history_types",
+  "day31_policy": "inclus",
+  "day31_diagnostic": "resultat secondaire sur le test sans le jour 31",
+  "alert_budget": {"unite": "jour", "K": [100, 250, 500]},
+  "sensibilite_diagnostique": {
+    "heures_70_15_15": [[1, 520], [521, 631], [632, 743]],
+    "volume_60_20_20": "bornes recalculees sur le volume cumule"
+  },
+  "gel": {"statut": "propose", "date": null, "valide_par": null}
 }
