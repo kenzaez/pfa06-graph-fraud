@@ -1,0 +1,24 @@
+{
+  "A": {
+    "desequilibre": "sous_ech_10pct",
+    "taux_cible": 0.1,
+    "lignes_train": 50070,
+    "max_depth": 6,
+    "learning_rate": 0.1,
+    "scale_pos_weight": 1.0,
+    "n_arbres": 66,
+    "ap_val": 1.0,
+    "temps_fit_s": 2.029831843000011
+  },
+  "B": {
+    "desequilibre": "sous_ech_1pct",
+    "taux_cible": 0.01,
+    "lignes_train": 500700,
+    "max_depth": 8,
+    "learning_rate": 0.1,
+    "scale_pos_weight": 1.0,
+    "n_arbres": 13,
+    "ap_val": 0.292787456658657,
+    "temps_fit_s": 3.4906329289999576
+  }
+}

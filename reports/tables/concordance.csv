@@ -1,0 +1,49 @@
+indicateur,section,rapport,code,statut
+sha256,3.1,16910f90577b0d981bf8ff289714510bb89bc71bff7d3f220f024e287e4eea6b,16910f90577b0d981bf8ff289714510bb89bc71bff7d3f220f024e287e4eea6b,OK
+n_transactions,Tableau audit,6362620,6362620,OK
+n_colonnes,Tableau audit,11,11,OK
+n_fraudes,Tableau audit,8213,8213,OK
+taux_fraude_pct,Tableau audit,0.129,0.129,OK
+fraudes_TRANSFER,Audit,4097,4097,OK
+fraudes_CASH_OUT,Audit,4116,4116,OK
+fraudes_PAYMENT,Audit,0,0,OK
+fraudes_CASH_IN,Audit,0,0,OK
+fraudes_DEBIT,Audit,0,0,OK
+emetteurs_distincts,Tableau audit,6353307,6353307,OK
+beneficiaires_distincts,Tableau audit,2722362,2722362,OK
+emetteurs_vus_1_fois,Frequence des comptes,6344009,6344009,OK
+beneficiaires_vus_1_fois,Frequence des comptes,2262704,2262704,OK
+beneficiaires_plus_de_10_fois,Frequence des comptes,130286,130286,OK
+comptes_emetteurs_et_beneficiaires,Recouvrement,1769,1769,OK
+tx_emetteur_deja_beneficiaire,Recouvrement,900,900,OK
+tx_emetteur_deja_beneficiaire_pct,Recouvrement,0.014,0.014,OK
+fraudes_emetteur_deja_beneficiaire,Recouvrement,0,0,OK
+paires_repetees,Transferts repetes,0,0,OK
+emetteur_nouveau_pct,Anciennete,99.84,99.84,OK
+beneficiaire_nouveau_pct,Anciennete,43.52,43.52,OK
+age_median_beneficiaire_fraude_h,Anciennete,0,0.0,OK
+age_median_beneficiaire_normal_h,Anciennete,8,8.0,OK
+diversite_mediane_beneficiaires,Diversite des voisins,1,1.0,OK
+diversite_mediane_beneficiaires_fraude,Diversite des voisins,4,4.0,OK
+tx_vers_marchands,Comptes marchands,2151495,2151495,OK
+fraudes_vers_marchands,Comptes marchands,0,0,OK
+montant_median_fraude,Montants,441423,441423.0,OK
+montant_median_normal,Montants,74685,74685.0,OK
+fraudes_montant_10M,Montants,287,287,OK
+fraudes_montant_nul,Montants,16,16,OK
+fraudes_vide_compte_pct,Soldes,97.8,97.8,OK
+isFlaggedFraud_total,isFlaggedFraud,16,16,OK
+isFlaggedFraud_vraies_fraudes,isFlaggedFraud,16,16,OK
+train_transactions,Partitions,6010937,6010937,OK
+val_transactions,Partitions,228103,228103,OK
+test_transactions,Partitions,123580,123580,OK
+train_fraudes,Partitions,5007,5007,OK
+val_fraudes,Partitions,1552,1552,OK
+test_fraudes,Partitions,1654,1654,OK
+train_taux_pct,Partitions,0.083,0.083,OK
+val_taux_pct,Partitions,0.68,0.68,OK
+test_taux_pct,Partitions,1.338,1.338,OK
+scoring_transactions,Perimetre,2770409,2770409,OK
+scoring_taux_pct,Perimetre,0.3,0.3,OK
+jour31_transactions,Volume temporel,272,272,OK
+jour31_fraudes,Volume temporel,272,272,OK
