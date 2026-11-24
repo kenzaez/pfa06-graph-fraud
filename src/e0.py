@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import xgboost as xgb
 from sklearn.calibration import calibration_curve
+from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import average_precision_score, brier_score_loss, precision_recall_curve
 from sklearn.pipeline import make_pipeline
@@ -91,7 +92,7 @@ def signed_log(X):
 
 
 def entrainer_lr(Xtr, ytr):
-    m = make_pipeline(FunctionTransformer(signed_log), StandardScaler(),
+    m = make_pipeline(SimpleImputer(strategy="median"), FunctionTransformer(signed_log), StandardScaler(),
                       LogisticRegression(class_weight="balanced", max_iter=1000))
     t0 = time.perf_counter()
     m.fit(Xtr.values, ytr.values)

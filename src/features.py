@@ -46,6 +46,11 @@ def matrice(df, scenario):
             X[d] = df.oldbalanceOrg - df.amount
         elif d == "ratio_montant_solde":
             X[d] = df.amount / (df.oldbalanceOrg + 1)
+    if scenario == "E1":
+        gcols = [c for c in df.columns if c.startswith("g_")]
+        assert gcols, "colonnes du graphe absentes : appeler graphe_causal.ajouter(df) avant"
+        for c in gcols:
+            X[c] = df[c].astype(float)
     interdit = set(VARS["excluded"]) | {VARS["target"], VARS["time_column"]} | set(VARS["graph_ids"])
     assert not interdit & set(X.columns)
     return X

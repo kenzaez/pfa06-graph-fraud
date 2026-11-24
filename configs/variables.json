@@ -1,15 +1,56 @@
 {
   "target": "isFraud",
-  "graph_ids": ["nameOrig", "nameDest"],
+  "graph_ids": [
+    "nameOrig",
+    "nameDest"
+  ],
   "time_column": "step",
-  "excluded": ["newbalanceOrig", "newbalanceDest", "isFlaggedFraud", "isFraud", "step", "oldbalanceDest"],
+  "excluded": [
+    "newbalanceOrig",
+    "newbalanceDest",
+    "isFlaggedFraud",
+    "isFraud",
+    "step",
+    "oldbalanceDest"
+  ],
   "scenarios": {
-    "A": ["type", "amount", "oldbalanceOrg"],
-    "B": ["type", "amount"]
+    "A": [
+      "type",
+      "amount",
+      "oldbalanceOrg"
+    ],
+    "B": [
+      "type",
+      "amount"
+    ],
+    "E1": [
+      "type",
+      "amount"
+    ]
   },
   "derivees": {
-    "ecart_montant_solde": {"formule": "oldbalanceOrg - amount", "depend_de": ["oldbalanceOrg", "amount"]},
-    "ratio_montant_solde": {"formule": "amount / (oldbalanceOrg + 1)", "depend_de": ["oldbalanceOrg", "amount"]}
+    "ecart_montant_solde": {
+      "formule": "oldbalanceOrg - amount",
+      "depend_de": [
+        "oldbalanceOrg",
+        "amount"
+      ]
+    },
+    "ratio_montant_solde": {
+      "formule": "amount / (oldbalanceOrg + 1)",
+      "depend_de": [
+        "oldbalanceOrg",
+        "amount"
+      ]
+    }
   },
-  "ablation_only": ["oldbalanceDest"]
+  "ablation_only": [
+    "oldbalanceDest"
+  ],
+  "graphe": {
+    "module": "src/graphe_causal.py",
+    "fenetre_steps": 24,
+    "regle": "evenements des steps strictement avant le step de la transaction, tous types, aucune etiquette, arete cible exclue",
+    "colonnes_prefixe": "g_"
+  }
 }

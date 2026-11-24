@@ -32,6 +32,8 @@ def test_scenario_b_sans_derivee_de_solde():
 def test_matrice_sans_variable_interdite():
     df = prepare(mini())
     interdit = set(VARS["excluded"]) | {"nameOrig", "nameDest", "day", "partition"}
+    from src import graphe_causal
+    df = graphe_causal.ajouter(df)
     for s in VARS["scenarios"]:
         X = matrice(df, s)
         assert not interdit & set(X.columns)

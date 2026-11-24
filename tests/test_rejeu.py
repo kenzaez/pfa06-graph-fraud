@@ -68,3 +68,26 @@ def test_ablation(tmp_path):
     out = ablation.lancer(jeu(), dossier=tmp_path)
     assert set(out.groupe) == {"type_montant", "solde", "solde_derivees"}
     assert (out.n_variables.groupby(out.groupe).first().sort_values().tolist() == [6, 7, 9])
+
+
+def test_e1_chaine_et_comparaison(tmp_path, monkeypatch):
+    from src import comparaison_e0_e1 as cmp, e1
+    sortie0, sortie1 = tmp_path / "e0", tmp_path / "e1"
+    for p in (sortie0, sortie1, tmp_path / "m0", tmp_path / "m1"):
+        p.mkdir()
+    monkeypatch.setattr(e0, "OUT", sortie0)
+    monkeypatch.setattr(e0, "MODELS", tmp_path / "m0")
+    monkeypatch.setattr(e1, "OUT", sortie1)
+    monkeypatch.setattr(e1, "MODELS", tmp_path / "m1")
+    monkeypatch.setattr(cmp, "E0", sortie0)
+    monkeypatch.setattr(cmp, "E1", sortie1)
+    monkeypatch.setattr(cmp, "OUT", tmp_path / "cmp")
+    df = jeu()
+    grille = {"desequilibre": [{"nom": "sous_ech_10pct", "taux_cible": 0.1}], "max_depth": [4], "learning_rate": [0.1]}
+    e0.main(df, grille=grille)
+    tab, params = e1.main(df, grille=grille)
+    assert set(tab.scenario) == {"E1"}
+    from src import graphe_causal
+    from src.features import prepare
+    res = cmp.main(graphe_causal.ajouter(prepare(df)))
+    assert len(res["global"]) > 0 and len(res["par_jour"]) > 0 and len(res["historique"]) > 0

@@ -39,7 +39,8 @@ pfa06-graph-fraud/
 4. Exécuter `notebooks/02_controle_s2.ipynb` : réexécution de l'audit, tableau de concordance rapport / code, prévalence par jour et par partition.
 5. Exécuter `notebooks/03_e0_xgboost.ipynb` : référence E0 et génération de `docs/note_s3_E0.md`.
 6. Exécuter `notebooks/04_e0_rejeu_diagnostics.ipynb` : rejeu de E0, scores sauvegardés, top K quotidien corrigé, calibration, ablation du solde, manifeste.
-7. Lancer les tests du protocole : `pytest tests/`
+7. Exécuter `notebooks/05_e1_graphe_causal.ipynb` : tests de causalité, variables du graphe sur le passé, E1 et comparaison à E0 B.
+8. Lancer les tests du protocole : `pytest tests/`
 
 En ligne de commande :
 
@@ -59,6 +60,6 @@ pytest tests/
 | S1 | Cadrage, état de l'art, vérification initiale de PaySim | Terminé |
 | S2 | Audit complet, contrat de variables, partitions temporelles, fiche protocole, concordance (48/48 OK), prevalence par jour | Termine, fiche protocole en attente de validation du Pr. MESTARI |
 | S3 | Référence E0 (XGBoost A et B, régression logistique), note générée automatiquement | Terminé, résultats dans `reports/e0/` et `docs/note_s3_E0.md` |
-| S4 | Variables relationnelles causales sur G<t (E1) | À venir |
+| S4 | Variables relationnelles causales sur G<t (E1) | Code, tests de causalité et notebook prêts, résultats à produire (notebook 05) |
 | S5 | GraphSAGE avec classification des arêtes (E2) | À venir |
 | S6 | Comparaison E0, E1, E2, ablations, analyse des erreurs | À venir |

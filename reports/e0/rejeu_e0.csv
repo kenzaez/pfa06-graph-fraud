@@ -1,0 +1,17 @@
+scenario,population,modele,partition,ecart_max_score,ap_initial,ap_rejeu,identique
+A,population_principale,XGBoost,val,0.0,1.0,1.0,True
+A,population_principale,XGBoost,test,0.0,0.999608624694802,0.999608624694802,True
+A,population_principale,RegLog,val,0.0,0.15087989635339458,0.15087989635339458,True
+A,population_principale,RegLog,test,0.0,0.2572041408806519,0.2572041408806519,True
+A,population_secondaire,XGBoost,val,0.0,0.9999696808314824,0.9999696808314824,True
+A,population_secondaire,XGBoost,test,0.0,0.9991998204140444,0.9991998204140444,True
+A,population_secondaire,RegLog,val,0.0,0.11262114630384788,0.11262114630384788,True
+A,population_secondaire,RegLog,test,0.0,0.1961549322650724,0.1961549322650724,True
+B,population_principale,XGBoost,val,0.0,0.292787456658657,0.292787456658657,True
+B,population_principale,XGBoost,test,0.0,0.34371047261182724,0.34371047261182724,True
+B,population_principale,RegLog,val,0.0,0.06048795989354308,0.06048795989354308,True
+B,population_principale,RegLog,test,0.0,0.11494544984109245,0.11494544984109245,True
+B,population_secondaire,XGBoost,val,0.0,0.2808893192801858,0.2808893192801858,True
+B,population_secondaire,XGBoost,test,0.0,0.33841862876698453,0.33841862876698453,True
+B,population_secondaire,RegLog,val,0.0,0.06036859434648139,0.06036859434648139,True
+B,population_secondaire,RegLog,test,0.0,0.11423713539783639,0.11423713539783639,True

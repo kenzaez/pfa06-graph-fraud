@@ -1,0 +1,17 @@
+scenario,population,modele,partition,seuil,alertes_total,alertes_par_jour_moyenne,alertes_jour_min,alertes_jour_max
+B,population_principale,XGBoost,test,0.0469731166958808,1247,178.14285714285714,80,411
+B,population_principale,XGBoost,val,0.0469731166958808,1815,259.2857142857143,77,473
+B,population_principale,RegLog,test,0.8210678378761094,750,107.14285714285714,29,296
+B,population_principale,RegLog,val,0.8210678378761094,1750,250.0,53,610
+A,population_secondaire,XGBoost,test,0.0131510663777589,1774,253.42857142857142,77,313
+A,population_secondaire,XGBoost,val,0.0131510663777589,1778,254.0,119,317
+A,population_secondaire,RegLog,test,0.9972115011150796,1056,150.85714285714286,12,463
+A,population_secondaire,RegLog,val,0.9972115011150796,1749,249.85714285714286,64,379
+A,population_principale,XGBoost,test,0.0056137191131711,1753,250.42857142857142,72,307
+A,population_principale,XGBoost,val,0.0056137191131711,1745,249.28571428571428,115,308
+A,population_principale,RegLog,test,0.9713976857042738,1157,165.28571428571428,35,453
+A,population_principale,RegLog,val,0.9713976857042738,1749,249.85714285714286,71,370
+B,population_secondaire,XGBoost,test,0.1032067388296127,1204,172.0,77,398
+B,population_secondaire,XGBoost,val,0.1032067388296127,1692,241.71428571428572,72,423
+B,population_secondaire,RegLog,test,0.9119575791567746,750,107.14285714285714,29,296
+B,population_secondaire,RegLog,val,0.9119575791567746,1750,250.0,53,610
