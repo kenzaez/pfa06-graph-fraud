@@ -6,6 +6,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import joblib
 import numpy as np
 import pandas as pd
 import xgboost as xgb
@@ -97,6 +98,14 @@ def entrainer_lr(Xtr, ytr):
     return m, time.perf_counter() - t0
 
 
+def taille_ko(m, chemin):
+    if isinstance(m, xgb.XGBClassifier):
+        m.save_model(chemin)
+    else:
+        joblib.dump(m, chemin)
+    return Path(chemin).stat().st_size / 1024
+
+
 def scores(m, X):
     return m.predict_proba(X.values if not isinstance(m, xgb.XGBClassifier) else X)[:, 1]
 
@@ -106,14 +115,22 @@ def seuil_budget(s_val, days_val, K):
     return float(np.sort(s_val)[::-1][n - 1])
 
 
+def ordre_alertes(g):
+    o = np.lexsort((g.index.values, -g.score.values))
+    return g.iloc[o]
+
+
 def topk_par_jour(d, K):
     rows = []
     for day, g in d.groupby("day"):
-        g = g.sort_values("score", ascending=False)
-        top = g.head(K)
-        rows.append({"day": day, "K": K, "transactions": len(g), "alertes": len(top),
+        g = ordre_alertes(g)
+        k_d = min(K, len(g))
+        top = g.head(k_d)
+        rows.append({"day": day, "K": K, "transactions": len(g), "alertes": k_d,
                      "fraudes_detectees": int(top.y.sum()), "fraudes_jour": int(g.y.sum()),
-                     "budget_depasse": len(g) < K})
+                     "budget_depasse": len(g) < K,
+                     "precision": top.y.sum() / k_d if k_d else np.nan,
+                     "rappel": top.y.sum() / g.y.sum() if g.y.sum() else np.nan})
     return pd.DataFrame(rows)
 
 
@@ -126,7 +143,7 @@ def ap_par_jour(d):
     return pd.DataFrame(rows)
 
 
-def metriques(y, s, days, seuil):
+def metriques(y, s, days, seuil, idx=None):
     y = np.asarray(y)
     pred = s >= seuil
     tp = int((pred & (y == 1)).sum())
@@ -142,7 +159,7 @@ def metriques(y, s, days, seuil):
            "seuil": seuil, "tp": tp, "fp": fp, "fn": fn, "tn": tn,
            "precision": p, "rappel": r, "f1": 2 * p * r / (p + r) if p + r else 0.0,
            "brier": brier_score_loss(y, s)}
-    d = pd.DataFrame({"day": np.asarray(days), "y": y, "score": s})
+    d = pd.DataFrame({"day": np.asarray(days), "y": y, "score": s}, index=np.arange(len(y)) if idx is None else np.asarray(idx))
     for K in KS:
         t = topk_par_jour(d, K)
         out[f"P@{K}"] = t.fraudes_detectees.sum() / t.alertes.sum()
@@ -211,17 +228,22 @@ def evaluer(d, scenario, pop, params=None, grille=None):
     else:
         m, t_fit = refit(Xtr, ytr, Xva, yva, params)
     lr_m, t_lr = entrainer_lr(Xtr, ytr)
-    m.save_model(MODELS / f"e0_xgb_{nom}.json")
+    tailles = {"XGBoost": taille_ko(m, MODELS / f"e0_xgb_{nom}.json"),
+               "RegLog": taille_ko(lr_m, MODELS / f"e0_reglog_{nom}.joblib")}
     res["params"] = params
     modeles = {"XGBoost": (m, t_fit), "RegLog": (lr_m, t_lr)}
-    lignes, jours, courbes, calib = [], [], {"val": {}, "test": {}}, {}
+    lignes, jours, courbes, calib, preds = [], [], {"val": {}, "test": {}}, {}, {}
     for lab, (mod, tf) in modeles.items():
         s_va = scores(mod, Xva)
         seuil = seuil_budget(s_va, sub.day[parts["val"]], CFG["budget_seuil_K"])
         for part, mask in [("val", parts["val"]), ("test", parts["test"]),
                            ("test_sans_jour31", parts["test"] & (sub.day < 31))]:
             s = scores(mod, X[mask])
-            row = metriques(y[mask].values, s, sub.day[mask].values, seuil)
+            row = metriques(y[mask].values, s, sub.day[mask].values, seuil, idx=X.index[mask].values)
+            if part in ("val", "test"):
+                preds.setdefault(part, pd.DataFrame({"idx": X.index[mask].values, "step": sub.step[mask].values,
+                                                    "day": sub.day[mask].values, "partition": part,
+                                                    "y": y[mask].values}))[f"score_{lab}"] = s
             row.update({"modele": lab, "scenario": scenario, "population": pop, "partition": part})
             lignes.append(row)
             if part in courbes:
@@ -236,14 +258,15 @@ def evaluer(d, scenario, pop, params=None, grille=None):
         for r in lignes[-3:]:
             r["temps_fit_s"] = tf
             r["latence_ms_1000tx"] = lat
+            r["taille_modele_ko"] = tailles[lab]
     figures(courbes, calib, nom)
+    pd.concat(preds.values()).to_csv(OUT / f"predictions_{nom}.csv.gz", index=False, float_format="%.10g")
     shap_moyen(m, Xtr).rename("shap_moyen_abs").to_csv(OUT / f"shap_{nom}.csv")
     res["metriques"] = pd.DataFrame(lignes)
     j = pd.concat(jours)
     j.insert(0, "scenario", scenario)
     j.insert(1, "population", pop)
     res["par_jour"] = j
-    res["taille_modele_ko"] = (MODELS / f"e0_xgb_{nom}.json").stat().st_size / 1024
     return res
 
 
@@ -255,10 +278,10 @@ def main(df, grille=None):
     for scenario in ["A", "B"]:
         r = evaluer(d, scenario, "population_principale", grille=grille)
         choix[scenario] = r["params"]
-        resultats.append(r["metriques"].assign(taille_modele_ko=r["taille_modele_ko"]))
+        resultats.append(r["metriques"])
         par_jour.append(r["par_jour"])
         r2 = evaluer(d, scenario, "population_secondaire", params=r["params"])
-        resultats.append(r2["metriques"].assign(taille_modele_ko=r2["taille_modele_ko"]))
+        resultats.append(r2["metriques"])
         par_jour.append(r2["par_jour"])
     tab = pd.concat(resultats)
     first = ["modele", "scenario", "population", "partition"]

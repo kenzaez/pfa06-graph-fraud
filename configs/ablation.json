@@ -1,0 +1,11 @@
+{
+  "seed": 42,
+  "taux_cible": 0.05,
+  "max_depth": 6,
+  "learning_rate": 0.1,
+  "subsample": 0.8,
+  "n_estimators_max": 500,
+  "early_stopping_rounds": 50,
+  "groupes": ["type_montant", "solde", "solde_derivees"],
+  "remarque": "meme echantillon d entrainement, meme graine, meme modele, aucune recherche d hyperparametres"
+}

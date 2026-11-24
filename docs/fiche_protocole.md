@@ -67,4 +67,19 @@ Toute modification de cette fiche donne une nouvelle version datee, avec sa just
 
 `configs/splits.json`, `configs/variables.json`, `tests/test_protocol.py`, `reports/tables/prevalence_par_partition.csv` (comptages par population).
 
+## Version 2 du 23/11/2026 : precisions apres l'expertise du 17/11/2026
+
+Cette version ne change aucun choix de E0 deja evalue. Elle precise la lecture des resultats et s'applique a E1 et E2. Le test a deja ete consulte pour E0 (voir `docs/registre_evaluation.md`), donc cette version n'est pas faite avant toute evaluation sur le test et on le dit.
+
+* Reference principale : scenario B (type, montant), avec la regression logistique B. Le scenario A est un diagnostic de sensibilite aux entrees, pas une reference.
+* Deux politiques d'alertes distinctes, jamais melangees dans un meme tableau :
+  * seuil gele : seuil choisi sur la validation pour viser environ 250 alertes par jour, applique tel quel au test. Le nombre d'alertes reel sur le test est rapporte (`reports/e0/alertes_au_seuil_gele.csv`) ;
+  * top K par jour : classement apres cloture du jour, repere hors ligne, pas une alerte immediate.
+* Top K par jour : k_d = min(K, n_d), scores egaux departages par l'ordre de ligne d'origine, precision agregee = vrais positifs sur le nombre d'alertes reellement emises, jours partiels et jours sans negatif marques, effectifs et metriques quotidiens publies (`reports/e0/topk_quotidien.csv`).
+* Scenario de decision avant execution : politique distincte, seuil gele applique dans l'ordre d'arrivee avec une capacite restante, a evaluer en S5. On ne suppose pas d'ordre fiable entre les transactions d'un meme step.
+* Selection des hyperparametres : AP de validation non arrondie, en cas d'egalite exacte le premier de la grille (profondeur 4, 6, 8, puis taux d'apprentissage 0,05 puis 0,1). Pour E1 et E2 : parmi les reglages a moins de 0,0001 d'AP du meilleur, on garde le plus petit modele (profondeur minimale, puis nombre d'arbres minimal).
+* Arret anticipe : critere `aucpr` calcule par XGBoost. La selection et toutes les AP publiees utilisent `average_precision_score` de scikit-learn. Ce sont deux calculs differents.
+* Test : consultations enregistrees dans `docs/registre_evaluation.md`. Toute decision modifiee apres avoir vu le test rend la comparaison concernee exploratoire.
+* Jours : le jour 25 est partiel (steps 595 a 600), le jour 31 est partiel et ne contient que des fraudes. Les resultats sont toujours donnes avec et sans le jour 31, et avec le retrait de chaque jour (`reports/e0/ap_sans_un_jour_test.csv`). Pas d'intervalle de confiance promis avec six jours utiles.
+
 Validation encadrant : ______________________ Date : __________

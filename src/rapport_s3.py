@@ -59,11 +59,48 @@ def lecture(res):
         x, l = t.loc[("XGBoost", s)], t.loc[("RegLog", s)]
         sens = "au dessus de" if x.ap > l.ap else "au niveau ou en dessous de"
         pts.append(f"Scenario {s} : XGBoost ({f(x.ap)}) est {sens} la regression logistique ({f(l.ap)}).")
+    for s_ in ["A", "B"]:
+        x_ = t.loc[("XGBoost", s_)]
+        n_al = int(x_.tp + x_.fp)
+        pts.append(f"Scenario {s_} au seuil gele ({f(x_.seuil, 4)}) : {n_al} alertes sur le test, dont {int(x_.fp)} fausses ({pct(100 * x_.fp / n_al, 1)} des alertes), et {int(x_.tp)} fraudes retrouvees sur {int(x_.tp + x_.fn)} (rappel {pct(100 * x_.rappel, 1)}). Le top K par jour est une autre politique, evaluee apres cloture du jour : ne pas confondre les deux.")
     pts.append(f"Dans le scenario B, l'AP de XGBoost vaut {f(xb.ratio_ap_taux, 1)} fois le hasard. C'est la reference que E1 et E2 devront depasser grace a l'information relationnelle.")
     s31 = res[(res.population == "population_principale") & (res.partition == "test_sans_jour31") & (res.modele == "XGBoost")].set_index("scenario")
     for s in ["A", "B"]:
         pts.append(f"Sans le jour 31, l'AP de XGBoost en scenario {s} passe de {f(t.loc[('XGBoost', s)].ap)} a {f(s31.loc[s].ap)} (taux de fraude {pct(s31.loc[s].taux_pct)}).")
     return "\n".join(f"{i}. {p}" for i, p in enumerate(pts, 1))
+
+
+def complements():
+    morceaux = []
+    p = E0 / "ablation_solde.csv"
+    if p.exists():
+        a = pd.read_csv(p)
+        a = a[a.partition.isin(["val", "test"])]
+        morceaux.append("### Ablation controlee du solde\n\nMeme echantillon, meme graine, meme modele, aucune recherche d'hyperparametres.\n\n" +
+                        tableau(a, ["groupe", "partition", "n_variables", lambda r: f(r.ap), lambda r: f(r.ratio_ap_taux, 1)],
+                                ["Variables", "Partition", "Nb variables", "AP", "AP / taux"]))
+    p = E0 / "calibration_resume.csv"
+    if p.exists():
+        c = pd.read_csv(p)
+        c = c[(c.population == "population_principale") & (c.partition == "test")]
+        morceaux.append("### Score moyen contre taux observe (test, population principale)\n\n" +
+                        tableau(c, ["scenario", "modele", lambda r: f(r.score_moyen, 4), lambda r: f(r.taux_observe, 4), lambda r: f(r.ecart, 4)],
+                                ["Scenario", "Modele", "Score moyen", "Taux observe", "Ecart"]))
+    p = E0 / "alertes_au_seuil_gele.csv"
+    if p.exists():
+        a = pd.read_csv(p)
+        a = a[a.population == "population_principale"]
+        morceaux.append("### Alertes emises au seuil gele, par jour\n\n" +
+                        tableau(a, ["scenario", "modele", "partition", lambda r: f(r.seuil, 4), lambda r: str(int(r.alertes_total)),
+                                    lambda r: f(r.alertes_par_jour_moyenne, 1), lambda r: str(int(r.alertes_jour_min)), lambda r: str(int(r.alertes_jour_max))],
+                                ["Scenario", "Modele", "Partition", "Seuil", "Alertes", "Moyenne par jour", "Min", "Max"]))
+    p = E0 / "rejeu_e0.csv"
+    if p.exists():
+        r_ = pd.read_csv(p)
+        morceaux.append("### Rejeu de E0\n\n" + tableau(r_, ["scenario", "population", "modele", "partition", lambda r: f"{r.ecart_max_score:.2e}",
+                                                          lambda r: f(r.ap_initial, 6), lambda r: f(r.ap_rejeu, 6), "identique"],
+                                                     ["Scenario", "Population", "Modele", "Partition", "Ecart max des scores", "AP initiale", "AP rejeu", "Identique"]))
+    return "\n\n".join(morceaux) if morceaux else "Pas encore genere : lancer le notebook 04."
 
 
 def main():
@@ -103,7 +140,7 @@ def main():
 
     couts = prin[prin.partition == "test"]
     t_couts = tableau(couts.sort_values(["scenario", "modele"]), ["modele", "scenario", lambda r: f(r.temps_fit_s, 1),
-                                                                   lambda r: f(r.latence_ms_1000tx, 2), lambda r: f(r.taille_modele_ko, 0) if r.modele == "XGBoost" else "n/a"],
+                                                                   lambda r: f(r.latence_ms_1000tx, 2), lambda r: f(r.taille_modele_ko, 0)],
                       ["Modele", "Scenario", "Entrainement (s)", "Latence pour 1000 tx (ms)", "Taille (Ko)"])
 
     seuils = prin[prin.partition == "test"].sort_values(["scenario", "modele"])
@@ -181,7 +218,7 @@ Ces valeurs decrivent le modele, elles ne disent pas pourquoi une transaction es
 
 ## 8. Calibration
 
-Le score de Brier est dans les tableaux, et les courbes de fiabilite sont dans `reports/e0/fiabilite_*.png`. Quand l'entrainement est sous echantillonne, les scores ne sont plus des probabilites realistes : ils surestiment le risque. Le classement (AP, P@K) n'en depend pas. Une calibration sur la validation sera etudiee a part (R11), en tenant compte du changement de taux de fraude entre validation et test.
+Le score de Brier est dans les tableaux, et les courbes de fiabilite sont dans `reports/e0/fiabilite_*.png`. Le Brier mesure l'erreur quadratique des scores lus comme des probabilites, il ne donne pas le sens du biais. Le sens du biais se lit en comparant le score moyen au taux observe (`reports/e0/calibration_resume.csv`, produit par le notebook 04). Quand l'entrainement est sous echantillonne ou pondere, les scores ne sont pas calibres sur la prevalence reelle. Le classement appris peut changer avec ces choix, mais une transformation strictement croissante appliquee apres coup ne change pas le classement. Une calibration sur la validation sera etudiee a part (R11), en tenant compte du changement de taux de fraude entre validation et test.
 
 ## 9. Couts
 
@@ -191,7 +228,11 @@ Le score de Brier est dans les tableaux, et les courbes de fiabilite sont dans `
 
 {lecture(res)}
 
-## 11. Limites
+## 11. Diagnostics complementaires
+
+{complements()}
+
+## 12. Limites
 
 * PaySim est synthetique : les resultats ne disent rien de l'efficacite sur une vraie banque.
 * Le scenario A repose en grande partie sur une regle du simulateur.

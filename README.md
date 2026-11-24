@@ -22,7 +22,7 @@ Chaque transaction est évaluée uniquement à partir du graphe strictement ant�
 pfa06-graph-fraud/
 ├── configs/         partitions temporelles et contrat de variables
 ├── data/            données brutes (non versionnées, voir data/README.md)
-├── docs/            fiche protocole (R2), note sur la prévalence (R3), note S3
+├── docs/            fiche protocole (R2, version 2), prévalence (R3), note S3, registre d'évaluation, réponse à l'expertise
 ├── models/          modèles E0 sauvegardés
 ├── notebooks/       notebooks d'analyse et d'expérimentation
 ├── reports/         figures et tableaux générés
@@ -38,7 +38,8 @@ pfa06-graph-fraud/
 3. Exécuter `notebooks/01_audit_paysim.ipynb` (testé sur Google Colab).
 4. Exécuter `notebooks/02_controle_s2.ipynb` : réexécution de l'audit, tableau de concordance rapport / code, prévalence par jour et par partition.
 5. Exécuter `notebooks/03_e0_xgboost.ipynb` : référence E0 et génération de `docs/note_s3_E0.md`.
-6. Lancer les tests du protocole : `pytest tests/`
+6. Exécuter `notebooks/04_e0_rejeu_diagnostics.ipynb` : rejeu de E0, scores sauvegardés, top K quotidien corrigé, calibration, ablation du solde, manifeste.
+7. Lancer les tests du protocole : `pytest tests/`
 
 En ligne de commande :
 
